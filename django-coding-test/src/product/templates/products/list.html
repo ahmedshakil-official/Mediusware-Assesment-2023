@@ -13,11 +13,11 @@
         <form action="" method="get" class="card-header">
             <div class="form-row justify-content-between">
                 <div class="col-md-2">
-                    <input type="text" name="title" placeholder="Product Title" class="form-control">
+                    <input type="text" name="title" placeholder="Product Title" class="form-control" value="{{ filter.form.title.value }}">
                 </div>
                 <div class="col-md-2">
                     <select name="variant" id="" class="form-control">
-                        <option selected disabled>--Select A Variant--</option>
+                        <option selected disabled>{{filter.form.variant.value}}</option>
 
                     </select>
                 </div>
@@ -55,58 +55,36 @@
                     </thead>
 
                     <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>T-Shirt <br> Created at : 25-Aug-2020</td>
-                        <td>Quality product in low cost</td>
-                        <td>
-                            <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
-                                <dt class="col-sm-3 pb-0">
-                                    XL/ Black/ Full
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    XL/ Black/ Half
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    L/ Black/ Full
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    L/ Black/ Half
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                            </dl>
-                            <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
-                            </button>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a href="" class="btn btn-success">Edit</a>
-                            </div>
-                        </td>
-                    </tr>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ product.title }}<br> Created at: {{ product.created_at }}</td>
+                            <td>{{ product.description }}</td>
+                            <td>
+                                {% for variant_price in product.productvariantprice_set.all %}
+                                <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
+                                    <dt class="col-sm-3 pb-0">
+                                        {{ variant_price.product_variant_two.variant.description }}/
+                                        {{ variant_price.product_variant_one.variant.description }}/
+                                    </dt>
+                                    <dd class="col-sm-9">
+                                        <dl class="row mb-0">
+                                            <dd class="col-sm-4 pb-0">Price: {{ variant_price.price }}</dd>
+                                            <dd class="col-sm-8 pb-0">InStock: {{ variant_price.stock }}</dd>
+                                        </dl>
+                                    </dd>
+                                </dl>
+
+                                {% endfor %}
+                                <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more</button>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="" class="btn btn-success">Edit</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
 
                 </table>
@@ -117,11 +95,36 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing 1 to 10 out of 100</p>
-                </div>
-                <div class="col-md-2">
+    <p>Showing {{ products.start_index }} to {{ products.end_index }} out of {{ products.paginator.count }}</p>
+</div>
 
+                <div class="col-md-6">
+                    <ul class="pagination justify-content-end">
+                        {% if products.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">&laquo;&laquo;</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for i in products.paginator.page_range %}
+                            <li class="page-item {% if products.number == i %}active{% endif %}">
+                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.paginator.num_pages }}">&raquo;&raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
                 </div>
+
+
             </div>
         </div>
     </div>
