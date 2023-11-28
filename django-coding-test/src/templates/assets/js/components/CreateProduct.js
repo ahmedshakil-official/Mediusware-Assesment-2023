@@ -75,10 +75,59 @@ const CreateProduct = (props) => {
     }
 
     // Save product
-    let saveProduct = (event) => {
-        event.preventDefault();
-        // TODO : write your code here to save the product
+  let saveProduct = async (event) => {
+    event.preventDefault();
+
+    try {
+      // Extract form data
+      const productName = document.getElementById('productName').value;
+      const productSku = document.getElementById('productSku').value;
+      const productDescription = document.getElementById('productDescription').value;
+
+      // Extract variant data
+      const variantData = productVariants.map((variant) => ({ title: variant.tags[0], description: variant.tags[1] }));
+
+      // Prepare product data
+      const productData = {
+        name: productName,
+        sku: productSku,
+        description: productDescription,
+        variants: variantData,
+        // Add other fields as needed
+      };
+
+      // Create form data to handle file uploads
+      const formData = new FormData();
+      formData.append('name', productData.name);
+      formData.append('sku', productData.sku);
+      formData.append('description', productData.description);
+
+      // Append each variant's data
+      variantData.forEach((variant, index) => {
+        formData.append(`variants[${index}][title]`, variant.title);
+        formData.append(`variants[${index}][description]`, variant.description);
+      });
+
+      // Append each media file
+      document.getElementById('mediaFiles').files.forEach((file, index) => {
+        formData.append(`media[${index}]`, file);
+      });
+
+      // Send product data to Django backend
+      const response = await axios.post('http://127.0.0.1:8000/product/create/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important for file uploads
+        },
+      });
+
+      // Handle the response
+      console.log(response.data); // You can do something with the response if needed
+
+    } catch (error) {
+      console.error('Error saving product:', error);
+      // Handle error as needed
     }
+  };
 
 
     return (
