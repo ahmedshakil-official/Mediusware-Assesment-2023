@@ -11,35 +11,38 @@
 
     <div class="card">
         <form action="" method="get" class="card-header">
-            <div class="form-row justify-content-between">
-                <div class="col-md-2">
-                    <input type="text" name="title" placeholder="Product Title" class="form-control" value="{{ filter.form.title.value }}">
+    {% csrf_token %}
+    <div class="form-row justify-content-between">
+        <div class="col-md-2">
+            <input type="text" name="{{ filter.form.title.name }}" placeholder="Product Title" class="form-control" value="{{ filter.form.title.value }}">
+        </div>
+        <div class="col-md-2">
+            <select name="{{ filter.form.variant.name }}" id="" class="form-control">
+                <option selected disabled>{{ filter.form.variant.label }}</option>
+<!--                {% for choice in filter.form.variant.choices %}-->
+<!--                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>-->
+<!--                {% endfor %}-->
+            </select>
+        </div>
+        <div class="col-md-3">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Price Range</span>
                 </div>
-                <div class="col-md-2">
-                    <select name="variant" id="" class="form-control">
-                        <option selected disabled>{{filter.form.variant.value}}</option>
-
-                    </select>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Price Range</span>
-                        </div>
-                        <input type="text" name="price_from" aria-label="First name" placeholder="From"
-                               class="form-control">
-                        <input type="text" name="price_to" aria-label="Last name" placeholder="To" class="form-control">
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <input type="date" name="date" placeholder="Date" class="form-control">
-                </div>
-                <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
-                </div>
+                <input type="text" name="{{ filter.form.price_from.name }}" aria-label="From" placeholder="From" class="form-control" value="{{ filter.form.price_from.value }}">
+                <input type="text" name="{{ filter.form.price_to.name }}" aria-label="To" placeholder="To" class="form-control" value="{{ filter.form.price_to.value }}">
             </div>
-        </form>
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="{{ filter.form.date.name }}" placeholder="Date" class="form-control" value="{{ filter.form.date.value }}">
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
+        </div>
+    </div>
+</form>
+
+
 
         <div class="card-body">
             <div class="table-response">
@@ -64,8 +67,8 @@
                                 {% for variant_price in product.productvariantprice_set.all %}
                                 <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
                                     <dt class="col-sm-3 pb-0">
-                                        {{ variant_price.product_variant_two.variant.description }}/
-                                        {{ variant_price.product_variant_one.variant.description }}/
+                                        {{ variant_price.product_variant_two.variant.title }}/
+                                        {{ variant_price.product_variant_one.variant.title }}/
                                     </dt>
                                     <dd class="col-sm-9">
                                         <dl class="row mb-0">
@@ -80,7 +83,7 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="" class="btn btn-success">Edit</a>
+                                    <a href="{% url 'product:update.product' product.id %}" class="btn btn-success">Edit</a>
                                 </div>
                             </td>
                         </tr>
@@ -95,8 +98,8 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-    <p>Showing {{ products.start_index }} to {{ products.end_index }} out of {{ products.paginator.count }}</p>
-</div>
+                    <p>Showing {{ products.start_index }} to {{ products.end_index }} out of {{ products.paginator.count }}</p>
+                </div>
 
                 <div class="col-md-6">
                     <ul class="pagination justify-content-end">

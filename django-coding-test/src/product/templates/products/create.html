@@ -8,14 +8,21 @@
         <a href="{% url 'product:create.product' %}" class="float-right btn btn-primary">All Product</a>
     </div>
 
-
-    <script>
-    var varients = {{ variants|safe }}
-    console.log(typeof varients)
-    </script>
-
     <div id="root">
         <CreateProduct id="variants" data-variants="{{ variants|safe }}"></CreateProduct>
     </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ variant_form.as_p }}
+        {{ image_form.as_p }}
+        <button type="submit" class="btn btn-primary">Create Product</button>
+    </form>
+
+    <script>
+        var variants = {{ variants|safe }}
+        console.log(typeof variants)
+    </script>
 
 {% endblock %}
